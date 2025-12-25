@@ -1,0 +1,7 @@
+# Archivo de protección para configuración
+# Evitar acceso directo a archivos de configuración
+
+<Files "*.php">
+    Order Deny,Allow
+    Deny from all
+</Files>
