@@ -41,11 +41,14 @@ Ver [ESTRUCTURA.md](ESTRUCTURA.md) para detalles completos de la organización d
    - Modifica la variable `$folder` si tu carpeta no se llama "TravelMap"
 
 5. **Descargar librerías locales**:
-   - Descarga Bootstrap 5 y colócalo en `assets/vendor/bootstrap/`
-   - Descarga jQuery 3.x y colócalo en `assets/vendor/jquery/`
-   - Descarga Leaflet.js y plugins en `assets/vendor/leaflet/`
+   - **IMPORTANTE**: Consulta [LIBRERIAS.md](LIBRERIAS.md) para instrucciones detalladas
+   - Bootstrap 5 → `assets/vendor/bootstrap/`
+   - jQuery 3.x → `assets/vendor/jquery/`
+   - Leaflet.js + plugins → `assets/vendor/leaflet/`
+     - Leaflet.draw (para editor de rutas)
+     - Leaflet.markercluster (para clustering de puntos)
 
-6. **Crear usuario administrador** (será implementado en Fase 2):
+6. **Crear usuario administrador**:
    - Accede a: `http://localhost/TravelMap/install/seed_admin.php`
    - Esto creará el usuario: **admin** / **admin123**
    - **IMPORTANTE**: Elimina o protege la carpeta `install/` después
@@ -71,13 +74,40 @@ Ver [ESTRUCTURA.md](ESTRUCTURA.md) para detalles completos de la organización d
 
 ## 📦 Estado del Proyecto
 
-**Fase 1 Completada**: Base de datos y estructura del proyecto
+**✅ Fase 1 Completada**: Base de datos y estructura del proyecto
 - ✅ Script SQL con todas las tablas
 - ✅ Estructura de carpetas organizada
 - ✅ Conexión PDO con manejo de excepciones
 - ✅ Configuración global del sistema
 
-**Próxima fase**: Sistema de autenticación y layout base
+**✅ Fase 2 Completada**: Sistema de autenticación y layout base
+- ✅ Sistema de login/logout con sesiones
+- ✅ Layout Bootstrap con navbar responsive
+- ✅ Dashboard administrativo
+- ✅ Protección de rutas privadas
+
+**✅ Fase 3 Completada**: ABM de Viajes y Puntos
+- ✅ CRUD completo de viajes
+- ✅ CRUD completo de puntos de interés
+- ✅ Subida y validación de imágenes
+- ✅ Formularios con validación PHP
+
+**✅ Fase 4 Completada**: Editor de Mapas
+- ✅ Modelo de rutas con GeoJSON
+- ✅ Editor de mapas con Leaflet.draw
+- ✅ Dibujo de polilíneas por tipo de transporte
+- ✅ Selector de coordenadas con mapa interactivo
+- ✅ Marcadores arrastrables para puntos
+
+**✅ Fase 5 Completada**: Visualizador Público
+- ✅ API endpoint JSON con datos públicos
+- ✅ Mapa interactivo a pantalla completa
+- ✅ Clustering de puntos con markercluster
+- ✅ Filtros por viaje con panel lateral
+- ✅ Popups con imágenes y detalles
+- ✅ Diseño responsive y moderno
+
+**🎉 Proyecto Completo y Funcional**
 
 ## 🤝 Contribuciones
 

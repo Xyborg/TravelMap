@@ -5,7 +5,9 @@
  * Listado de viajes con opciones para crear, editar y eliminar
  */
 
-require_once __DIR__ . '/../includes/header.php';
+// Cargar configuración primero
+require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../src/models/Trip.php';
 
 $tripModel = new Trip();
@@ -23,6 +25,9 @@ if (isset($_GET['delete']) && is_numeric($_GET['delete'])) {
         $message_type = 'danger';
     }
 }
+
+// Ahora incluir header después de procesar
+require_once __DIR__ . '/../includes/header.php';
 
 // Obtener todos los viajes
 $trips = $tripModel->getAll('start_date DESC, created_at DESC');

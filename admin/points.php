@@ -5,7 +5,9 @@
  * Listado de puntos con filtro por viaje y opciones CRUD
  */
 
-require_once __DIR__ . '/../includes/header.php';
+// Cargar configuración primero
+require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../src/models/Point.php';
 require_once __DIR__ . '/../src/models/Trip.php';
 
@@ -14,13 +16,19 @@ $tripModel = new Trip();
 $message = '';
 $message_type = '';
 
-// Obtener filtro de viaje
-$filter_trip_id = isset($_GET['trip_id']) && is_numeric($_GET['trip_id']) ? (int) $_GET['trip_id'] : null;
-
 // Procesar eliminación
 if (isset($_GET['delete']) && is_numeric($_GET['delete'])) {
     $point_id = (int) $_GET['delete'];
-    if ($pointModel->delete($point_id)) {
+    
+    // Obtener el punto para eliminar su imagen
+    $point = $pointModel->getById($point_id);
+    
+    if ($point && $pointModel->delete($point_id)) {
+        // Eliminar imagen asociada si existe
+        if (!empty($point['image_path'])) {
+            require_once __DIR__ . '/../src/helpers/FileHelper.php';
+            FileHelper::deleteFile($point['image_path']);
+        }
         $message = 'Punto de interés eliminado correctamente';
         $message_type = 'success';
     } else {
@@ -28,6 +36,12 @@ if (isset($_GET['delete']) && is_numeric($_GET['delete'])) {
         $message_type = 'danger';
     }
 }
+
+// Ahora incluir header después de procesar
+require_once __DIR__ . '/../includes/header.php';
+
+// Obtener filtro de viaje
+$filter_trip_id = isset($_GET['trip_id']) && is_numeric($_GET['trip_id']) ? (int) $_GET['trip_id'] : null;
 
 // Obtener puntos (filtrados o todos)
 $points = $pointModel->getAll($filter_trip_id);

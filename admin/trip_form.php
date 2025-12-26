@@ -5,7 +5,9 @@
  * Crear o editar un viaje
  */
 
-require_once __DIR__ . '/../includes/header.php';
+// Cargar configuración y dependencias ANTES de header.php para permitir redirects
+require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../src/models/Trip.php';
 
 $tripModel = new Trip();
@@ -65,6 +67,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
+
+// Ahora sí incluir header.php (después de procesar y posibles redirects)
+require_once __DIR__ . '/../includes/header.php';
 
 // Valores por defecto para formulario
 $form_data = $trip ?? [

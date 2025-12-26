@@ -5,7 +5,9 @@
  * Crear o editar un punto de interés con subida de imágenes
  */
 
-require_once __DIR__ . '/../includes/header.php';
+// Cargar configuración y dependencias ANTES de header.php para permitir redirects
+require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../src/models/Point.php';
 require_once __DIR__ . '/../src/models/Trip.php';
 require_once __DIR__ . '/../src/helpers/FileHelper.php';
@@ -89,6 +91,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
+
+// Ahora sí incluir header.php (después de procesar y posibles redirects)
+require_once __DIR__ . '/../includes/header.php';
 
 // Valores por defecto para formulario
 $form_data = $point ?? [
@@ -375,6 +380,9 @@ $point_types = Point::getTypes();
         </div>
     </div>
 </div>
+
+<!-- jQuery primero (requerido por point_map.js) -->
+<script src="<?= ASSETS_URL ?>/vendor/jquery/jquery-3.7.1.min.js"></script>
 
 <!-- Leaflet CSS -->
 <link rel="stylesheet" href="<?= ASSETS_URL ?>/vendor/leaflet/css/leaflet.css">

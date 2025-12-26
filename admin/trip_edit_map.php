@@ -5,7 +5,8 @@
  * Permite dibujar rutas y gestionar el mapa del viaje
  */
 
-require_once __DIR__ . '/../includes/header.php';
+// Cargar configuración y dependencias ANTES de header.php para permitir redirects
+require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../src/models/Trip.php';
 require_once __DIR__ . '/../src/models/Route.php';
 require_once __DIR__ . '/../src/models/Point.php';
@@ -94,6 +95,9 @@ foreach ($points as $point) {
 }
 
 $transport_types = Route::getTransportTypes();
+
+// Ahora sí incluir header.php (después de procesar y posibles redirects)
+require_once __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="row mb-3">
@@ -239,6 +243,9 @@ $transport_types = Route::getTransportTypes();
         <?php endif; ?>
     </div>
 </div>
+
+<!-- jQuery primero (requerido por trip_map.js) -->
+<script src="<?= ASSETS_URL ?>/vendor/jquery/jquery-3.7.1.min.js"></script>
 
 <!-- Leaflet CSS -->
 <link rel="stylesheet" href="<?= ASSETS_URL ?>/vendor/leaflet/css/leaflet.css">
