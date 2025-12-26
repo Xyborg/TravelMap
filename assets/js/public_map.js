@@ -279,9 +279,9 @@
     function createPointPopup(point, trip, typeConfig) {
         let html = '<div class="point-popup">';
         
-        // Imagen si existe
+        // Imagen si existe (clicable para abrir lightbox)
         if (point.image_url) {
-            html += `<img src="${point.image_url}" alt="${escapeHtml(point.title)}" class="popup-image">`;
+            html += `<img src="${point.image_url}" alt="${escapeHtml(point.title)}" class="popup-image" onclick="openLightbox('${point.image_url}', '${escapeHtml(point.title)}')" title="Click para ver en tamaño completo">`;
         }
         
         // Contenido
@@ -674,6 +674,60 @@
         });
 
         console.log('Public Map inicializado completamente');
+        
+        // Inicializar lightbox
+        initLightbox();
+    });
+
+    /**
+     * Inicializa el lightbox para imágenes
+     */
+    function initLightbox() {
+        const lightbox = document.getElementById('imageLightbox');
+        if (lightbox) {
+            // Cerrar lightbox al hacer click en cualquier parte
+            lightbox.addEventListener('click', function() {
+                closeLightbox();
+            });
+        }
+    }
+
+    /**
+     * Abre el lightbox con una imagen
+     */
+    window.openLightbox = function(imageUrl, altText) {
+        const lightbox = document.getElementById('imageLightbox');
+        const lightboxImage = document.getElementById('lightboxImage');
+        
+        if (lightbox && lightboxImage) {
+            lightboxImage.src = imageUrl;
+            lightboxImage.alt = altText || '';
+            lightbox.style.display = 'flex';
+            
+            // Prevenir scroll del body
+            document.body.style.overflow = 'hidden';
+        }
+    };
+
+    /**
+     * Cierra el lightbox
+     */
+    window.closeLightbox = function() {
+        const lightbox = document.getElementById('imageLightbox');
+        
+        if (lightbox) {
+            lightbox.style.display = 'none';
+            
+            // Restaurar scroll del body
+            document.body.style.overflow = '';
+        }
+    };
+
+    // También cerrar con tecla ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeLightbox();
+        }
     });
 
 })();
