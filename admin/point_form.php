@@ -301,27 +301,60 @@ $point_types = Point::getTypes();
                         </small>
                     </div>
 
-                    <!-- Imagen -->
+                    <!-- Imagen con Drag & Drop -->
                     <div class="mb-3">
                         <label for="image" class="form-label">Imagen</label>
+                        
+                        <!-- Área de Drag & Drop -->
+                        <div id="dropArea" class="border rounded p-4 text-center <?= isset($errors['image']) ? 'border-danger' : 'border-secondary' ?>" 
+                             style="background-color: #f8f9fa; cursor: pointer; transition: all 0.3s;">
+                            <div id="dropAreaContent">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-cloud-upload text-muted mb-2" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M4.406 1.342A5.53 5.53 0 0 1 8 0c2.69 0 4.923 2 5.166 4.579C14.758 4.804 16 6.137 16 7.773 16 9.569 14.502 11 12.687 11H10a.5.5 0 0 1 0-1h2.688C13.979 10 15 8.988 15 7.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 2.825 10.328 1 8 1a4.53 4.53 0 0 0-2.941 1.1c-.757.652-1.153 1.438-1.153 2.055v.448l-.445.049C2.064 4.805 1 5.952 1 7.318 1 8.785 2.23 10 3.781 10H6a.5.5 0 0 1 0 1H3.781C1.708 11 0 9.366 0 7.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383"/>
+                                    <path fill-rule="evenodd" d="M7.646 4.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V14.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708z"/>
+                                </svg>
+                                <p class="mb-2 fw-bold">Arrastra y suelta tu imagen aquí</p>
+                                <p class="mb-2 text-muted">o</p>
+                                <button type="button" class="btn btn-outline-primary btn-sm" id="selectFileBtn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-folder2-open me-1" viewBox="0 0 16 16">
+                                        <path d="M1 3.5A1.5 1.5 0 0 1 2.5 2h2.764c.958 0 1.76.56 2.311 1.184C7.985 3.648 8.48 4 9 4h4.5A1.5 1.5 0 0 1 15 5.5v.64c.57.265.94.876.856 1.546l-.64 5.124A2.5 2.5 0 0 1 12.733 15H3.266a2.5 2.5 0 0 1-2.481-2.19l-.64-5.124A1.5 1.5 0 0 1 1 6.14zM2 6h12v-.5a.5.5 0 0 0-.5-.5H9c-.964 0-1.71-.629-2.174-1.154C6.374 3.334 5.82 3 5.264 3H2.5a.5.5 0 0 0-.5.5zm-.367 1a.5.5 0 0 0-.496.562l.64 5.124A1.5 1.5 0 0 0 3.266 14h9.468a1.5 1.5 0 0 0 1.489-1.314l.64-5.124A.5.5 0 0 0 14.367 7z"/>
+                                    </svg>
+                                    Seleccionar archivo
+                                </button>
+                                <p class="small text-muted mt-2 mb-0">JPG, JPEG, PNG - Máximo 5MB</p>
+                            </div>
+                            <div id="previewArea" style="display: none;">
+                                <img id="imagePreview" src="" alt="Vista previa" class="img-thumbnail mb-2" style="max-width: 100%; max-height: 300px;">
+                                <p id="fileName" class="mb-2 fw-bold"></p>
+                                <button type="button" class="btn btn-outline-danger btn-sm" id="removeImageBtn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash me-1" viewBox="0 0 16 16">
+                                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                                        <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+                                    </svg>
+                                    Quitar imagen
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Input file oculto -->
                         <input type="file" 
-                               class="form-control <?= isset($errors['image']) ? 'is-invalid' : '' ?>" 
+                               class="d-none" 
                                id="image" 
                                name="image" 
-                               accept="image/jpeg,image/png,image/jpg">
+                               accept="image/jpeg,image/png,image/jpg,image/gif">
+                        
                         <?php if (isset($errors['image'])): ?>
-                            <div class="invalid-feedback"><?= htmlspecialchars($errors['image']) ?></div>
-                        <?php else: ?>
-                            <small class="form-text text-muted">Formatos permitidos: JPG, JPEG, PNG. Tamaño máximo: 5MB</small>
+                            <div class="text-danger small mt-1"><?= htmlspecialchars($errors['image']) ?></div>
                         <?php endif; ?>
 
                         <?php if ($is_edit && !empty($point['image_path'])): ?>
-                            <div class="mt-2">
+                            <div class="mt-3">
                                 <label class="form-label">Imagen actual:</label><br>
                                 <img src="<?= BASE_URL ?>/<?= htmlspecialchars($point['image_path']) ?>" 
                                      alt="Imagen actual" 
                                      class="img-thumbnail" 
                                      style="max-width: 200px;">
+                                <p class="small text-muted mt-1">Sube una nueva imagen para reemplazarla</p>
                             </div>
                         <?php endif; ?>
                     </div>
@@ -398,5 +431,123 @@ const initialLng = <?= !empty($form_data['longitude']) ? $form_data['longitude']
 
 <!-- Script del mapa de puntos -->
 <script src="<?= ASSETS_URL ?>/js/point_map.js"></script>
+
+<!-- Script para Drag & Drop de imágenes -->
+<script>
+$(document).ready(function() {
+    const dropArea = $('#dropArea');
+    const fileInput = $('#image');
+    const selectFileBtn = $('#selectFileBtn');
+    const removeImageBtn = $('#removeImageBtn');
+    const dropAreaContent = $('#dropAreaContent');
+    const previewArea = $('#previewArea');
+    const imagePreview = $('#imagePreview');
+    const fileName = $('#fileName');
+
+    // Prevenir comportamiento por defecto del navegador
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropArea.on(eventName, function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        });
+    });
+
+    // Efectos visuales al arrastrar
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropArea.on(eventName, function() {
+            $(this).css({
+                'background-color': '#e3f2fd',
+                'border-color': '#2196F3',
+                'border-width': '2px'
+            });
+        });
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropArea.on(eventName, function() {
+            $(this).css({
+                'background-color': '#f8f9fa',
+                'border-color': '#6c757d',
+                'border-width': '1px'
+            });
+        });
+    });
+
+    // Manejar drop
+    dropArea.on('drop', function(e) {
+        const files = e.originalEvent.dataTransfer.files;
+        if (files.length > 0) {
+            handleFile(files[0]);
+        }
+    });
+
+    // Click en el área para abrir selector
+    dropArea.on('click', function(e) {
+        if (!$(e.target).closest('#removeImageBtn').length && !$(e.target).closest('#imagePreview').length) {
+            fileInput.click();
+        }
+    });
+
+    // Click en botón seleccionar
+    selectFileBtn.on('click', function(e) {
+        e.stopPropagation();
+        fileInput.click();
+    });
+
+    // Cuando se selecciona archivo con input
+    fileInput.on('change', function() {
+        if (this.files && this.files.length > 0) {
+            handleFile(this.files[0]);
+        }
+    });
+
+    // Botón para quitar imagen
+    removeImageBtn.on('click', function(e) {
+        e.stopPropagation();
+        clearImage();
+    });
+
+    // Función para manejar el archivo
+    function handleFile(file) {
+        // Validar tipo de archivo
+        const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+        if (!validTypes.includes(file.type)) {
+            alert('Por favor, selecciona una imagen válida (JPG, JPEG, PNG o GIF)');
+            return;
+        }
+
+        // Validar tamaño (5MB)
+        const maxSize = 5 * 1024 * 1024; // 5MB en bytes
+        if (file.size > maxSize) {
+            alert('El archivo es demasiado grande. El tamaño máximo es 5MB');
+            return;
+        }
+
+        // Crear DataTransfer para asignar el archivo al input
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        fileInput[0].files = dataTransfer.files;
+
+        // Mostrar preview
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            imagePreview.attr('src', e.target.result);
+            fileName.text(file.name);
+            dropAreaContent.hide();
+            previewArea.show();
+        };
+        reader.readAsDataURL(file);
+    }
+
+    // Función para limpiar imagen
+    function clearImage() {
+        fileInput.val('');
+        imagePreview.attr('src', '');
+        fileName.text('');
+        previewArea.hide();
+        dropAreaContent.show();
+    }
+});
+</script>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
