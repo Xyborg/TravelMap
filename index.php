@@ -44,6 +44,31 @@ require_once __DIR__ . '/config/config.php';
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
+            <!-- Buscador de lugares -->
+            <div class="mb-4">
+                <h6 class="text-muted text-uppercase small mb-3">Buscar Lugar</h6>
+                <div class="input-group mb-2">
+                    <span class="input-group-text">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                        </svg>
+                    </span>
+                    <input type="text" 
+                           class="form-control form-control-sm" 
+                           id="publicPlaceSearch" 
+                           placeholder="Ciudad, país o lugar..."
+                           autocomplete="off">
+                    <button class="btn btn-sm btn-outline-primary" type="button" id="publicSearchBtn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                        </svg>
+                    </button>
+                </div>
+                <div id="publicSearchResults" class="list-group" style="display: none; max-height: 250px; overflow-y: auto;"></div>
+            </div>
+
+            <hr>
+
             <!-- Controles generales -->
             <div class="mb-4">
                 <h6 class="text-muted text-uppercase small mb-3">Controles</h6>

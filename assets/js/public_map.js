@@ -496,6 +496,91 @@
     }
 
     /**
+     * Busca lugares usando Nominatim (OpenStreetMap)
+     */
+    function searchPublicPlace(query) {
+        if (!query || query.trim().length < 3) {
+            alert('Por favor, ingresa al menos 3 caracteres para buscar');
+            return;
+        }
+
+        const searchResults = $('#publicSearchResults');
+        searchResults.html('<div class="list-group-item small"><div class="spinner-border spinner-border-sm me-2"></div>Buscando...</div>');
+        searchResults.show();
+
+        // Usar proxy local para evitar problemas de CORS
+        const url = `${window.location.origin}/TravelMap/api/geocode.php?q=${encodeURIComponent(query)}&limit=5`;
+
+        $.ajax({
+            url: url,
+            method: 'GET',
+            dataType: 'json',
+            success: function(results) {
+                searchResults.empty();
+
+                if (!results || results.length === 0) {
+                    searchResults.html('<div class="list-group-item small text-muted">No se encontraron resultados</div>');
+                    return;
+                }
+
+                if (results.error) {
+                    searchResults.html(`<div class="list-group-item small text-danger">${results.error}</div>`);
+                    return;
+                }
+
+                results.forEach(function(place) {
+                    const displayName = place.display_name;
+                    const lat = parseFloat(place.lat);
+                    const lon = parseFloat(place.lon);
+                    
+                    const item = $(`
+                        <button type="button" class="list-group-item list-group-item-action small" data-lat="${lat}" data-lon="${lon}">
+                            <div>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-geo-alt-fill me-1" viewBox="0 0 16 16">
+                                    <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/>
+                                </svg>
+                                <strong>${place.name || place.type}</strong>
+                            </div>
+                            <div class="text-muted" style="font-size: 0.85em;">${displayName}</div>
+                        </button>
+                    `);
+
+                    item.on('click', function() {
+                        const lat = parseFloat($(this).data('lat'));
+                        const lon = parseFloat($(this).data('lon'));
+                        goToPublicPlace(lat, lon);
+                    });
+
+                    searchResults.append(item);
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error('Error en búsqueda:', error);
+                let errorMsg = 'Error al buscar. Intenta nuevamente.';
+                
+                if (xhr.responseJSON && xhr.responseJSON.error) {
+                    errorMsg = xhr.responseJSON.error;
+                }
+                
+                searchResults.html(`<div class="list-group-item small text-danger">${errorMsg}</div>`);
+            }
+        });
+    }
+
+    /**
+     * Centra el mapa en un lugar
+     */
+    function goToPublicPlace(lat, lng) {
+        map.setView([lat, lng], 12);
+        
+        // Ocultar resultados
+        $('#publicSearchResults').hide();
+        $('#publicPlaceSearch').val('');
+
+        console.log('Navegado a:', lat, lng);
+    }
+
+    /**
      * Inicialización cuando el DOM está listo
      */
     $(document).ready(function () {
@@ -504,6 +589,27 @@
 
         // Cargar datos
         loadData();
+
+        // Búsqueda de lugares
+        $('#publicSearchBtn').on('click', function() {
+            const query = $('#publicPlaceSearch').val();
+            searchPublicPlace(query);
+        });
+
+        $('#publicPlaceSearch').on('keypress', function(e) {
+            if (e.which === 13) { // Enter
+                e.preventDefault();
+                const query = $(this).val();
+                searchPublicPlace(query);
+            }
+        });
+
+        // Ocultar resultados al hacer clic fuera
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('#publicPlaceSearch, #publicSearchResults, #publicSearchBtn').length) {
+                $('#publicSearchResults').hide();
+            }
+        });
 
         // Toggle de rutas
         $('#toggleRoutes').on('change', function() {

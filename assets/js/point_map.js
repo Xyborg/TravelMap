@@ -182,11 +182,132 @@
     }
 
     /**
+     * Busca lugares usando Nominatim (OpenStreetMap)
+     */
+    function searchPlace(query) {
+        if (!query || query.trim().length < 3) {
+            alert('Por favor, ingresa al menos 3 caracteres para buscar');
+            return;
+        }
+
+        const searchResults = $('#searchResults');
+        searchResults.html('<div class="list-group-item"><div class="spinner-border spinner-border-sm me-2"></div>Buscando...</div>');
+        searchResults.show();
+
+        // Usar proxy local para evitar problemas de CORS
+        const url = `${window.location.origin}/TravelMap/api/geocode.php?q=${encodeURIComponent(query)}&limit=5`;
+
+        $.ajax({
+            url: url,
+            method: 'GET',
+            dataType: 'json',
+            success: function(results) {
+                searchResults.empty();
+
+                if (!results || results.length === 0) {
+                    searchResults.html('<div class="list-group-item text-muted">No se encontraron resultados</div>');
+                    return;
+                }
+
+                if (results.error) {
+                    searchResults.html(`<div class="list-group-item text-danger">${results.error}</div>`);
+                    return;
+                }
+
+                results.forEach(function(place) {
+                    const displayName = place.display_name;
+                    const lat = parseFloat(place.lat);
+                    const lon = parseFloat(place.lon);
+                    
+                    const item = $(`
+                        <button type="button" class="list-group-item list-group-item-action" data-lat="${lat}" data-lon="${lon}">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-geo-alt-fill me-1" viewBox="0 0 16 16">
+                                        <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/>
+                                    </svg>
+                                    ${place.name || place.type}
+                                </h6>
+                            </div>
+                            <p class="mb-1 small text-muted">${displayName}</p>
+                        </button>
+                    `);
+
+                    item.on('click', function() {
+                        const lat = parseFloat($(this).data('lat'));
+                        const lon = parseFloat($(this).data('lon'));
+                        goToPlace(lat, lon, displayName);
+                    });
+
+                    searchResults.append(item);
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error('Error en búsqueda:', error);
+                let errorMsg = 'Error al buscar. Intenta nuevamente.';
+                
+                if (xhr.responseJSON && xhr.responseJSON.error) {
+                    errorMsg = xhr.responseJSON.error;
+                }
+                
+                searchResults.html(`<div class="list-group-item text-danger">${errorMsg}</div>`);
+            }
+        });
+    }
+
+    /**
+     * Centra el mapa en un lugar y coloca el marcador
+     */
+    function goToPlace(lat, lng, name) {
+        // Remover marcador anterior
+        if (marker) {
+            map.removeLayer(marker);
+        }
+
+        // Agregar nuevo marcador
+        addMarker(lat, lng);
+
+        // Centrar el mapa
+        map.setView([lat, lng], 15);
+
+        // Actualizar campos del formulario
+        updateFormFields(lat, lng);
+
+        // Ocultar resultados
+        $('#searchResults').hide();
+        $('#placeSearch').val('');
+
+        console.log('Navegado a:', name, lat, lng);
+    }
+
+    /**
      * Inicialización cuando el DOM está listo
      */
     $(document).ready(function () {
         // Inicializar mapa
         initMap();
+
+        // Botón de búsqueda
+        $('#searchBtn').on('click', function() {
+            const query = $('#placeSearch').val();
+            searchPlace(query);
+        });
+
+        // Búsqueda al presionar Enter
+        $('#placeSearch').on('keypress', function(e) {
+            if (e.which === 13) { // Enter
+                e.preventDefault();
+                const query = $(this).val();
+                searchPlace(query);
+            }
+        });
+
+        // Ocultar resultados al hacer clic fuera
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('#placeSearch, #searchResults, #searchBtn').length) {
+                $('#searchResults').hide();
+            }
+        });
 
         // Sincronizar mapa cuando cambian los inputs de coordenadas
         $('#latitude, #longitude').on('blur', syncMapFromInputs);
