@@ -55,7 +55,11 @@
             showCoverageOnHover: false,
             zoomToBoundsOnClick: true,
             spiderfyOnMaxZoom: true,
-            maxClusterRadius: 80,
+            maxClusterRadius: 30,
+            disableClusteringAtZoom: 15,
+            removeOutsideVisibleBounds: true,
+            chunkedLoading: true,
+            chunkInterval: 200,
             iconCreateFunction: function(cluster) {
                 const count = cluster.getChildCount();
                 return L.divIcon({
