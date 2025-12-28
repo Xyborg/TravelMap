@@ -76,6 +76,28 @@ class FileHelper {
             // Establecer permisos
             chmod($file_path, 0644);
             
+            // Aplicar redimensionamiento y compresión si está configurado
+            try {
+                // Cargar configuraciones desde la base de datos
+                require_once ROOT_PATH . '/config/db.php';
+                require_once ROOT_PATH . '/src/models/Settings.php';
+                
+                $conn = getDB();
+                $settingsModel = new Settings($conn);
+                
+                $max_width = (int)$settingsModel->get('image_max_width', 1920);
+                $max_height = (int)$settingsModel->get('image_max_height', 1080);
+                $quality = (int)$settingsModel->get('image_quality', 85);
+                
+                // Aplicar redimensionamiento y compresión
+                if (!self::resizeImage($file_path, $file_path, $max_width, $max_height, $quality)) {
+                    error_log('Advertencia: No se pudo redimensionar la imagen, pero se guardó el archivo original');
+                }
+            } catch (Exception $e) {
+                // Si hay error al cargar configuración o procesar, continuar con archivo original
+                error_log('Advertencia: Error al procesar imagen: ' . $e->getMessage());
+            }
+            
             return [
                 'success' => true,
                 'path' => $relative_path,
@@ -176,17 +198,160 @@ class FileHelper {
     }
 
     /**
-     * Redimensionar imagen (opcional, para futuras mejoras)
+     * Redimensionar y comprimir imagen
+     * 
+     * @param string $source_path Ruta de la imagen original
+     * @param string $dest_path Ruta de destino (puede ser la misma que origen)
+     * @param int $max_width Ancho máximo
+     * @param int $max_height Alto máximo
+     * @param int $quality Calidad JPEG (0-100)
+     * @return bool True si se procesó correctamente
+     */
+    public static function resizeImage($source_path, $dest_path, $max_width = 1920, $max_height = 1080, $quality = 85) {
+        // Verificar que la extensión GD esté disponible
+        if (!extension_loaded('gd')) {
+            error_log('Error: La extensión GD no está disponible');
+            return false;
+        }
+        
+        // Verificar que el archivo existe
+        if (!file_exists($source_path)) {
+            error_log('Error: Archivo fuente no existe: ' . $source_path);
+            return false;
+        }
+        
+        // Obtener información de la imagen
+        $image_info = @getimagesize($source_path);
+        if ($image_info === false) {
+            error_log('Error: No se pudo obtener información de la imagen');
+            return false;
+        }
+        
+        list($orig_width, $orig_height, $image_type) = $image_info;
+        
+        // Si la imagen ya es más pequeña que los límites, solo aplicar compresión si es necesario
+        if ($orig_width <= $max_width && $orig_height <= $max_height) {
+            // Solo comprimir si es JPEG y la calidad es diferente a la original
+            if ($image_type === IMAGETYPE_JPEG && $quality < 100) {
+                return self::compressJpeg($source_path, $dest_path, $quality);
+            }
+            // Si no necesita procesamiento, copiar si son archivos diferentes
+            if ($source_path !== $dest_path) {
+                return copy($source_path, $dest_path);
+            }
+            return true;
+        }
+        
+        // Calcular nuevas dimensiones manteniendo la proporción
+        $ratio = min($max_width / $orig_width, $max_height / $orig_height);
+        $new_width = round($orig_width * $ratio);
+        $new_height = round($orig_height * $ratio);
+        
+        // Cargar imagen original según el tipo
+        $source_image = null;
+        switch ($image_type) {
+            case IMAGETYPE_JPEG:
+                $source_image = @imagecreatefromjpeg($source_path);
+                break;
+            case IMAGETYPE_PNG:
+                $source_image = @imagecreatefrompng($source_path);
+                break;
+            case IMAGETYPE_GIF:
+                $source_image = @imagecreatefromgif($source_path);
+                break;
+            default:
+                error_log('Error: Tipo de imagen no soportado: ' . $image_type);
+                return false;
+        }
+        
+        if ($source_image === false) {
+            error_log('Error: No se pudo cargar la imagen desde: ' . $source_path);
+            return false;
+        }
+        
+        // Crear imagen de destino
+        $dest_image = imagecreatetruecolor($new_width, $new_height);
+        
+        if ($dest_image === false) {
+            imagedestroy($source_image);
+            error_log('Error: No se pudo crear la imagen de destino');
+            return false;
+        }
+        
+        // Preservar transparencia para PNG
+        if ($image_type === IMAGETYPE_PNG) {
+            imagealphablending($dest_image, false);
+            imagesavealpha($dest_image, true);
+            $transparent = imagecolorallocatealpha($dest_image, 0, 0, 0, 127);
+            imagefilledrectangle($dest_image, 0, 0, $new_width, $new_height, $transparent);
+        }
+        
+        // Redimensionar imagen
+        $result = imagecopyresampled(
+            $dest_image, 
+            $source_image, 
+            0, 0, 0, 0, 
+            $new_width, $new_height, 
+            $orig_width, $orig_height
+        );
+        
+        if ($result === false) {
+            imagedestroy($source_image);
+            imagedestroy($dest_image);
+            error_log('Error: No se pudo redimensionar la imagen');
+            return false;
+        }
+        
+        // Guardar imagen según el tipo
+        $save_result = false;
+        switch ($image_type) {
+            case IMAGETYPE_JPEG:
+                $save_result = imagejpeg($dest_image, $dest_path, $quality);
+                break;
+            case IMAGETYPE_PNG:
+                // PNG: calidad va de 0 (sin compresión) a 9 (máxima compresión)
+                // Convertir calidad JPEG (0-100) a escala PNG (0-9)
+                $png_quality = 9 - round(($quality / 100) * 9);
+                $save_result = imagepng($dest_image, $dest_path, $png_quality);
+                break;
+            case IMAGETYPE_GIF:
+                $save_result = imagegif($dest_image, $dest_path);
+                break;
+        }
+        
+        // Liberar memoria
+        imagedestroy($source_image);
+        imagedestroy($dest_image);
+        
+        if ($save_result === false) {
+            error_log('Error: No se pudo guardar la imagen procesada');
+            return false;
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Comprimir imagen JPEG sin redimensionar
      * 
      * @param string $source_path Ruta de la imagen original
      * @param string $dest_path Ruta de destino
-     * @param int $max_width Ancho máximo
-     * @param int $max_height Alto máximo
-     * @return bool True si se redimensionó correctamente
+     * @param int $quality Calidad (0-100)
+     * @return bool True si se comprimió correctamente
      */
-    public static function resizeImage($source_path, $dest_path, $max_width = 1200, $max_height = 800) {
-        // Esta función se puede implementar en el futuro si se necesita
-        // Por ahora, solo retornamos true
-        return true;
+    private static function compressJpeg($source_path, $dest_path, $quality = 85) {
+        if (!extension_loaded('gd')) {
+            return false;
+        }
+        
+        $source_image = @imagecreatefromjpeg($source_path);
+        if ($source_image === false) {
+            return false;
+        }
+        
+        $result = imagejpeg($source_image, $dest_path, $quality);
+        imagedestroy($source_image);
+        
+        return $result;
     }
 }

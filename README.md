@@ -19,6 +19,11 @@ Aplicación web completa para crear y visualizar mapas interactivos de viajes co
   - Zona horaria del sistema
   - Opciones de clustering de puntos en el mapa
   - Colores personalizados por tipo de transporte
+  - **Procesamiento automático de imágenes**:
+    - Redimensionamiento automático según dimensiones máximas configurables
+    - Compresión JPEG con nivel de calidad ajustable
+    - Preservación de transparencia en imágenes PNG
+    - Optimización de peso de archivos sin pérdida visual significativa
 
 ### Visualizador Público
 - **Mapa a Pantalla Completa**: Interfaz responsive con todos los viajes y puntos publicados
@@ -63,8 +68,33 @@ Aplicación web completa para crear y visualizar mapas interactivos de viajes co
 ### Software Necesario
 - **Servidor Web**: XAMPP, WAMP, LAMP o similar
 - **PHP**: Versión 8.0 o superior
+  - **Extensiones PHP Requeridas**:
+    - `PDO` - Conexión a base de datos (generalmente viene activada)
+    - `pdo_mysql` - Driver MySQL para PDO (generalmente viene activada)
+    - `GD` - Procesamiento de imágenes (redimensionamiento y compresión)
+    - `fileinfo` - Detección de tipos MIME (generalmente viene activada)
 - **Base de Datos**: MySQL 5.7+ o MariaDB 10.3+
 - **Navegador**: Chrome, Firefox, Safari o Edge (versión reciente)
+
+### Verificar Extensiones PHP
+Para verificar que las extensiones estén habilitadas, edita `php.ini` y asegúrate de que estas líneas estén **sin** punto y coma al inicio:
+```ini
+extension=gd
+extension=pdo_mysql
+extension=fileinfo
+```
+
+En XAMPP, el archivo `php.ini` generalmente está en:
+- Windows: `C:\xampp\php\php.ini`
+- Linux/Mac: `/opt/lampp/etc/php.ini`
+
+Después de modificar `php.ini`, **reinicia Apache** para aplicar los cambios.
+
+**Verificación rápida**: Puedes crear un archivo `info.php` con el siguiente contenido:
+```php
+<?php phpinfo(); ?>
+```
+Accédelo desde el navegador y busca las secciones "gd", "PDO" y "fileinfo".
 
 ### Librerías Locales (sin CDN)
 Todas las librerías están incluidas localmente en `assets/vendor/`:
@@ -137,7 +167,9 @@ Esto creará el usuario administrador:
 
 - Contraseñas hasheadas con algoritmo bcrypt (`password_hash()`)
 - Sesiones con tiempo de expiración configurable
-- Validación estricta de tipos de archivo en uploads (JPEG, PNG, GIF)
+- Validación estricta de tipos de archivo en uploads (JPEG, PNG)
+- Verificación de tipo MIME con `finfo_file()` antes de procesar imágenes
+- Procesamiento automático de imágenes para optimizar tamaño y dimensiones
 - Protección de rutas administrativas mediante autenticación
 - Foreign Keys con restricciones CASCADE para integridad referencial
 - Preparación de consultas SQL con PDO (prevención de SQL injection)

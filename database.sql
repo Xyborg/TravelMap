@@ -109,7 +109,10 @@ INSERT INTO settings (setting_key, setting_value, setting_type, description) VAL
 ('transport_color_ship', '#00AAAA', 'string', 'Color para rutas en barco'),
 ('transport_color_car', '#4444FF', 'string', 'Color para rutas en auto'),
 ('transport_color_train', '#FF8800', 'string', 'Color para rutas en tren'),
-('transport_color_walk', '#44FF44', 'string', 'Color para rutas caminando');
+('transport_color_walk', '#44FF44', 'string', 'Color para rutas caminando'),
+('image_max_width', '1920', 'number', 'Ancho máximo de imágenes en píxeles'),
+('image_max_height', '1080', 'number', 'Alto máximo de imágenes en píxeles'),
+('image_quality', '85', 'number', 'Calidad de compresión JPEG (0-100)');
 
 -- ============================================
 -- Datos iniciales (opcional)

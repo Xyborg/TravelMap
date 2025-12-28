@@ -75,6 +75,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             }
         }
         
+        // Configuraciones de imagen
+        if (isset($_POST['image_max_width'])) {
+            $updates['image_max_width'] = [
+                'value' => (int)$_POST['image_max_width'],
+                'type' => 'number'
+            ];
+        }
+        
+        if (isset($_POST['image_max_height'])) {
+            $updates['image_max_height'] = [
+                'value' => (int)$_POST['image_max_height'],
+                'type' => 'number'
+            ];
+        }
+        
+        if (isset($_POST['image_quality'])) {
+            $updates['image_quality'] = [
+                'value' => (int)$_POST['image_quality'],
+                'type' => 'number'
+            ];
+        }
+        
         // Actualizar todas las configuraciones
         if ($settingsModel->updateMultiple($updates)) {
             $_SESSION['success_message'] = 'Configuración actualizada correctamente';
@@ -214,6 +236,82 @@ require_once __DIR__ . '/../includes/header.php';
                         Zona horaria utilizada para fechas y horas del sistema
                     </small>
                 </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Configuraciones de Imágenes -->
+    <div class="card mb-4">
+        <div class="card-header bg-warning text-dark">
+            <h5 class="mb-0"><i class="bi bi-image"></i> Configuración de Imágenes</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label for="image_max_width" class="form-label">
+                        Ancho Máximo (píxeles)
+                    </label>
+                    <input 
+                        type="number" 
+                        class="form-control" 
+                        id="image_max_width" 
+                        name="image_max_width" 
+                        value="<?= htmlspecialchars($currentSettings['image_max_width'] ?? 1920) ?>"
+                        min="800" 
+                        max="4096"
+                        step="1"
+                        required
+                    >
+                    <small class="form-text text-muted">
+                        Las imágenes más anchas se redimensionarán automáticamente
+                    </small>
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                    <label for="image_max_height" class="form-label">
+                        Alto Máximo (píxeles)
+                    </label>
+                    <input 
+                        type="number" 
+                        class="form-control" 
+                        id="image_max_height" 
+                        name="image_max_height" 
+                        value="<?= htmlspecialchars($currentSettings['image_max_height'] ?? 1080) ?>"
+                        min="600" 
+                        max="4096"
+                        step="1"
+                        required
+                    >
+                    <small class="form-text text-muted">
+                        Las imágenes más altas se redimensionarán automáticamente
+                    </small>
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                    <label for="image_quality" class="form-label">
+                        Calidad de Compresión JPEG (%)
+                    </label>
+                    <input 
+                        type="number" 
+                        class="form-control" 
+                        id="image_quality" 
+                        name="image_quality" 
+                        value="<?= htmlspecialchars($currentSettings['image_quality'] ?? 85) ?>"
+                        min="50" 
+                        max="100"
+                        step="5"
+                        required
+                    >
+                    <small class="form-text text-muted">
+                        Mayor calidad = archivos más grandes (85% recomendado)
+                    </small>
+                </div>
+            </div>
+            
+            <div class="alert alert-info mb-0" role="alert">
+                <strong><i class="bi bi-info-circle"></i> Nota:</strong> 
+                Las imágenes se procesarán automáticamente al subirlas. 
+                Requiere la extensión <code>GD</code> de PHP instalada.
             </div>
         </div>
     </div>

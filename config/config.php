@@ -35,6 +35,9 @@ define('UPLOADS_URL', BASE_URL . '/uploads');
 $defaultTimezone = 'America/Argentina/Buenos_Aires';
 $defaultMaxUploadSize = 8 * 1024 * 1024; // 8MB
 $defaultSessionLifetime = 3600 * 24; // 24 horas
+$defaultImageMaxWidth = 1920;
+$defaultImageMaxHeight = 1080;
+$defaultImageQuality = 85;
 
 // Intentar cargar configuraciones dinámicas desde la base de datos
 try {
@@ -51,12 +54,18 @@ try {
     $timezone = $settingsModel->get('timezone', $defaultTimezone);
     $maxUploadSize = $settingsModel->get('max_upload_size', $defaultMaxUploadSize);
     $sessionLifetime = $settingsModel->get('session_lifetime', $defaultSessionLifetime);
+    $imageMaxWidth = $settingsModel->get('image_max_width', $defaultImageMaxWidth);
+    $imageMaxHeight = $settingsModel->get('image_max_height', $defaultImageMaxHeight);
+    $imageQuality = $settingsModel->get('image_quality', $defaultImageQuality);
 } catch (Exception $e) {
     // Si hay algún error al cargar configuraciones, usar valores por defecto
     error_log('Error al cargar configuraciones: ' . $e->getMessage());
     $timezone = $defaultTimezone;
     $maxUploadSize = $defaultMaxUploadSize;
     $sessionLifetime = $defaultSessionLifetime;
+    $imageMaxWidth = $defaultImageMaxWidth;
+    $imageMaxHeight = $defaultImageMaxHeight;
+    $imageQuality = $defaultImageQuality;
 }
 
 // Aplicar configuraciones
@@ -66,6 +75,11 @@ date_default_timezone_set($timezone);
 define('MAX_UPLOAD_SIZE', $maxUploadSize);
 define('ALLOWED_IMAGE_TYPES', ['image/jpeg', 'image/png', 'image/jpg']);
 define('ALLOWED_IMAGE_EXTENSIONS', ['jpg', 'jpeg', 'png']);
+
+// Configuración de procesamiento de imágenes
+define('IMAGE_MAX_WIDTH', $imageMaxWidth);
+define('IMAGE_MAX_HEIGHT', $imageMaxHeight);
+define('IMAGE_QUALITY', $imageQuality);
 
 // Configuración de sesión
 define('SESSION_LIFETIME', $sessionLifetime);
