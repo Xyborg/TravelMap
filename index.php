@@ -7,7 +7,13 @@ require_once __DIR__ . '/config/config.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Travel Map - Mis Viajes por el Mundo</title>
+    <title><?= htmlspecialchars(SITE_TITLE) ?></title>
+    <meta name="description" content="<?= htmlspecialchars(SITE_DESCRIPTION) ?>">
+    
+    <?php if (!empty(SITE_FAVICON)): ?>
+    <link rel="icon" type="image/x-icon" href="<?= htmlspecialchars(SITE_FAVICON) ?>">
+    <link rel="shortcut icon" type="image/x-icon" href="<?= htmlspecialchars(SITE_FAVICON) ?>">
+    <?php endif; ?>
     
     <!-- Bootstrap 5 CSS -->
     <link href="<?= ASSETS_URL ?>/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -19,6 +25,13 @@ require_once __DIR__ . '/config/config.php';
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="<?= ASSETS_URL ?>/css/public_map.css?a=1">
+    
+    <?php 
+    // Insertar código de analytics u otros scripts personalizados
+    if (!empty(SITE_ANALYTICS_CODE)): 
+        echo SITE_ANALYTICS_CODE . "\n";
+    endif; 
+    ?>
 </head>
 <body>
     <!-- Mapa a pantalla completa -->

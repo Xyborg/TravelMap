@@ -24,6 +24,11 @@ Aplicación web completa para crear y visualizar mapas interactivos de viajes co
     - Compresión JPEG con nivel de calidad ajustable
     - Preservación de transparencia en imágenes PNG
     - Optimización de peso de archivos sin pérdida visual significativa
+  - **Personalización del sitio público**:
+    - Título personalizado (aparece en pestaña del navegador y SEO)
+    - Meta descripción para optimización en buscadores
+    - Favicon personalizable
+    - Integración de Google Analytics u otros scripts de análisis
 
 ### Visualizador Público
 - **Mapa a Pantalla Completa**: Interfaz responsive con todos los viajes y puntos publicados
@@ -157,6 +162,7 @@ Esto creará el usuario administrador:
    - Establece tu zona horaria
    - Personaliza los colores de las rutas por tipo de transporte
    - Configura el comportamiento del clustering de puntos
+   - **Personaliza el sitio público**: título, descripción, favicon y analytics
 3. Crea un nuevo viaje definiendo título, descripción, fechas y color identificador
 4. Agrega rutas dibujándolas directamente en el mapa y especificando el tipo de transporte
 5. Añade puntos de interés con coordenadas (click en el mapa), descripción y fotos

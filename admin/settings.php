@@ -97,6 +97,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             ];
         }
         
+        // Configuraciones del sitio público
+        if (isset($_POST['site_title'])) {
+            $updates['site_title'] = [
+                'value' => trim($_POST['site_title']),
+                'type' => 'string'
+            ];
+        }
+        
+        if (isset($_POST['site_description'])) {
+            $updates['site_description'] = [
+                'value' => trim($_POST['site_description']),
+                'type' => 'string'
+            ];
+        }
+        
+        if (isset($_POST['site_favicon'])) {
+            $updates['site_favicon'] = [
+                'value' => trim($_POST['site_favicon']),
+                'type' => 'string'
+            ];
+        }
+        
+        if (isset($_POST['site_analytics_code'])) {
+            $updates['site_analytics_code'] = [
+                'value' => $_POST['site_analytics_code'], // No trim para preservar formato
+                'type' => 'string'
+            ];
+        }
+        
         // Actualizar todas las configuraciones
         if ($settingsModel->updateMultiple($updates)) {
             $_SESSION['success_message'] = 'Configuración actualizada correctamente';
@@ -312,6 +341,92 @@ require_once __DIR__ . '/../includes/header.php';
                 <strong><i class="bi bi-info-circle"></i> Nota:</strong> 
                 Las imágenes se procesarán automáticamente al subirlas. 
                 Requiere la extensión <code>GD</code> de PHP instalada.
+            </div>
+        </div>
+    </div>
+    
+    <!-- Configuraciones del Sitio Público -->
+    <div class="card mb-4">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0"><i class="bi bi-globe"></i> Configuración del Sitio Público</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="site_title" class="form-label">
+                        Título del Sitio <span class="text-danger">*</span>
+                    </label>
+                    <input 
+                        type="text" 
+                        class="form-control" 
+                        id="site_title" 
+                        name="site_title" 
+                        value="<?= htmlspecialchars($currentSettings['site_title'] ?? 'Travel Map - Mis Viajes por el Mundo') ?>"
+                        maxlength="100"
+                        required
+                    >
+                    <small class="form-text text-muted">
+                        Aparecerá en la pestaña del navegador y en resultados de búsqueda
+                    </small>
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <label for="site_favicon" class="form-label">
+                        Favicon (URL)
+                    </label>
+                    <input 
+                        type="text" 
+                        class="form-control" 
+                        id="site_favicon" 
+                        name="site_favicon" 
+                        value="<?= htmlspecialchars($currentSettings['site_favicon'] ?? '') ?>"
+                        placeholder="/TravelMap/uploads/favicon.ico"
+                    >
+                    <small class="form-text text-muted">
+                        Ruta al icono del sitio (16x16 o 32x32 px, formato .ico o .png)
+                    </small>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label for="site_description" class="form-label">
+                        Descripción del Sitio (Meta Description)
+                    </label>
+                    <textarea 
+                        class="form-control" 
+                        id="site_description" 
+                        name="site_description" 
+                        rows="2"
+                        maxlength="160"
+                    ><?= htmlspecialchars($currentSettings['site_description'] ?? 'Explora mis viajes por el mundo con mapas interactivos, rutas y fotografías') ?></textarea>
+                    <small class="form-text text-muted">
+                        Descripción breve para SEO (máximo 160 caracteres). Aparece en resultados de Google
+                    </small>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label for="site_analytics_code" class="form-label">
+                        Código de Analytics / Scripts Personalizados
+                    </label>
+                    <textarea 
+                        class="form-control font-monospace small" 
+                        id="site_analytics_code" 
+                        name="site_analytics_code" 
+                        rows="6"
+                        placeholder="<!-- Google Analytics, Facebook Pixel, etc. -->&#10;<script>&#10;  // Tu código aquí&#10;</script>"
+                    ><?= htmlspecialchars($currentSettings['site_analytics_code'] ?? '') ?></textarea>
+                    <small class="form-text text-muted">
+                        Código HTML/JavaScript que se insertará en el <code>&lt;head&gt;</code> del sitio público (Google Analytics, Facebook Pixel, etc.)
+                    </small>
+                </div>
+            </div>
+            
+            <div class="alert alert-info mb-0" role="alert">
+                <strong><i class="bi bi-info-circle"></i> Nota:</strong> 
+                Estos cambios afectarán únicamente a la página pública (<code>index.php</code>). El panel de administración no se verá afectado.
             </div>
         </div>
     </div>

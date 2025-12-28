@@ -38,6 +38,10 @@ $defaultSessionLifetime = 3600 * 24; // 24 horas
 $defaultImageMaxWidth = 1920;
 $defaultImageMaxHeight = 1080;
 $defaultImageQuality = 85;
+$defaultSiteTitle = 'Travel Map - Mis Viajes por el Mundo';
+$defaultSiteDescription = 'Explora mis viajes por el mundo con mapas interactivos, rutas y fotografías';
+$defaultSiteFavicon = '';
+$defaultSiteAnalyticsCode = '';
 
 // Intentar cargar configuraciones dinámicas desde la base de datos
 try {
@@ -57,6 +61,10 @@ try {
     $imageMaxWidth = $settingsModel->get('image_max_width', $defaultImageMaxWidth);
     $imageMaxHeight = $settingsModel->get('image_max_height', $defaultImageMaxHeight);
     $imageQuality = $settingsModel->get('image_quality', $defaultImageQuality);
+    $siteTitle = $settingsModel->get('site_title', $defaultSiteTitle);
+    $siteDescription = $settingsModel->get('site_description', $defaultSiteDescription);
+    $siteFavicon = $settingsModel->get('site_favicon', $defaultSiteFavicon);
+    $siteAnalyticsCode = $settingsModel->get('site_analytics_code', $defaultSiteAnalyticsCode);
 } catch (Exception $e) {
     // Si hay algún error al cargar configuraciones, usar valores por defecto
     error_log('Error al cargar configuraciones: ' . $e->getMessage());
@@ -66,6 +74,10 @@ try {
     $imageMaxWidth = $defaultImageMaxWidth;
     $imageMaxHeight = $defaultImageMaxHeight;
     $imageQuality = $defaultImageQuality;
+    $siteTitle = $defaultSiteTitle;
+    $siteDescription = $defaultSiteDescription;
+    $siteFavicon = $defaultSiteFavicon;
+    $siteAnalyticsCode = $defaultSiteAnalyticsCode;
 }
 
 // Aplicar configuraciones
@@ -80,6 +92,12 @@ define('ALLOWED_IMAGE_EXTENSIONS', ['jpg', 'jpeg', 'png']);
 define('IMAGE_MAX_WIDTH', $imageMaxWidth);
 define('IMAGE_MAX_HEIGHT', $imageMaxHeight);
 define('IMAGE_QUALITY', $imageQuality);
+
+// Configuración del sitio público
+define('SITE_TITLE', $siteTitle);
+define('SITE_DESCRIPTION', $siteDescription);
+define('SITE_FAVICON', $siteFavicon);
+define('SITE_ANALYTICS_CODE', $siteAnalyticsCode);
 
 // Configuración de sesión
 define('SESSION_LIFETIME', $sessionLifetime);
