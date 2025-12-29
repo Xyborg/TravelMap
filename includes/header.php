@@ -9,6 +9,8 @@ require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/auth.php';
 
 // Asegurar que el usuario esté autenticado
+// Nota: Las páginas de admin ya deberían llamar require_auth() antes de procesar datos,
+// pero se mantiene aquí como doble verificación para páginas que solo muestran información
 require_auth();
 
 $current_page = basename($_SERVER['PHP_SELF']);

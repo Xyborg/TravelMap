@@ -7,6 +7,10 @@
 
 // Cargar configuración y dependencias ANTES de header.php para permitir redirects
 require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../includes/auth.php';
+
+// SEGURIDAD: Validar autenticación ANTES de cualquier procesamiento
+require_auth();
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../src/models/User.php';
 
