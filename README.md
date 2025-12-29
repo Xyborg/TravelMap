@@ -184,6 +184,13 @@ Esto creará el usuario administrador:
 
 Ver [ESTRUCTURA.md](ESTRUCTURA.md) para detalles completos de la organización de carpetas y archivos.
 
+## A futuro
+
+* Agregar traducciones en archivos de idioma para ampliar la base de usuarios
+* Permitir enlazar viajes en particular pasando parámetros
+* Incrustar el mapa en sitios de terceros para compartir
+* Se aceptan ideas! Siempre manteniendo la simplicidad
+
 ## 🤝 Contribuciones
 
 Creado por Fabio Baccaglioni <fabiomb@gmail.com>
