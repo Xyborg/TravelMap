@@ -176,6 +176,7 @@ require_once __DIR__ . '/config/config.php';
     <!-- Leaflet JS -->
     <script src="<?= ASSETS_URL ?>/vendor/leaflet/js/leaflet.js"></script>
     <script src="<?= ASSETS_URL ?>/vendor/leaflet/plugins/leaflet.markercluster.js"></script>
+    <script src="<?= ASSETS_URL ?>/vendor/leaflet/plugins/leaflet.curve.js"></script>
     
     <!-- API URL Config -->
     <script>

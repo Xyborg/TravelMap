@@ -300,23 +300,69 @@
         const color = trip.status === 'planned' ? '#999999' : (config.color || route.color);
         const dashArray = config.dashArray;
 
-        const layer = L.geoJSON(route.geojson, {
-            style: {
-                color: color,
-                weight: 4,
-                opacity: 0.7,
-                dashArray: dashArray
-            },
-            onEachFeature: function(feature, layer) {
-                const popupContent = `
-                    <div class="route-popup">
-                        <strong>${config.icon} ${escapeHtml(trip.title)}</strong><br>
-                        <small class="text-muted">Transporte: ${transportType}</small>
-                    </div>
-                `;
-                layer.bindPopup(popupContent);
-            }
-        });
+        let layer;
+        
+        // Para vuelos, usar curvas de Bézier para una apariencia más elegante
+        if (transportType === 'plane' && route.geojson.geometry.type === 'LineString') {
+            const coords = route.geojson.geometry.coordinates;
+            
+            // Obtener punto de inicio y fin
+            const start = [coords[0][1], coords[0][0]];
+            const end = [coords[coords.length - 1][1], coords[coords.length - 1][0]];
+            
+            // Calcular punto de control para la curva (punto medio elevado)
+            const midLat = (start[0] + end[0]) / 2;
+            const midLng = (start[1] + end[1]) / 2;
+            
+            // Calcular el offset vertical basado en la distancia
+            const distance = Math.sqrt(
+                Math.pow(end[0] - start[0], 2) + Math.pow(end[1] - start[1], 2)
+            );
+            const curveHeight = distance * 0.2; // 20% de la distancia para la altura de la curva
+            
+            // Punto de control elevado
+            const controlPoint = [midLat + curveHeight, midLng];
+            
+            // Crear curva cuadrática de Bézier
+            layer = L.curve(
+                ['M', start, 'Q', controlPoint, end],
+                {
+                    color: color,
+                    weight: 4,
+                    opacity: 0.7,
+                    dashArray: dashArray,
+                    fill: false
+                }
+            );
+            
+            // Agregar popup
+            const popupContent = `
+                <div class="route-popup">
+                    <strong>${config.icon} ${escapeHtml(trip.title)}</strong><br>
+                    <small class="text-muted">Transporte: ${transportType}</small>
+                </div>
+            `;
+            layer.bindPopup(popupContent);
+        } else {
+            // Para otros transportes, usar el estilo estándar
+            layer = L.geoJSON(route.geojson, {
+                style: {
+                    color: color,
+                    weight: 4,
+                    opacity: 0.7,
+                    dashArray: dashArray
+                },
+                onEachFeature: function(feature, layer) {
+                    const popupContent = `
+                        <div class="route-popup">
+                            <strong>${config.icon} ${escapeHtml(trip.title)}</strong><br>
+                            <small class="text-muted">Transporte: ${transportType}</small>
+                        </div>
+                    `;
+                    layer.bindPopup(popupContent);
+                }
+            });
+        }
 
         // Separar rutas en avión de las demás
         const isFlightRoute = transportType === 'plane';

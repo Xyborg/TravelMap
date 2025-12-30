@@ -98,6 +98,24 @@ assets/vendor/leaflet/
    - `MarkerCluster.Default.css` → `assets/vendor/leaflet/plugins/`
    - `leaflet.markercluster.js` → `assets/vendor/leaflet/plugins/`
 
+## 📦 Leaflet.curve (Plugin - Curvas Bézier para Vuelos)
+
+**Descargar de:** https://github.com/elfalem/Leaflet.curve
+
+**Versión recomendada:** 0.9.2
+
+**Archivo necesario:**
+- `leaflet.curve.js` → Colocar en: `assets/vendor/leaflet/plugins/`
+
+**Instrucciones:**
+1. Descarga directa desde CDN:
+   ```
+   https://cdn.jsdelivr.net/npm/@elfalem/leaflet-curve@0.9.2/dist/leaflet.curve.js
+   ```
+2. Guarda como: `assets/vendor/leaflet/plugins/leaflet.curve.js`
+
+**Uso:** Este plugin permite dibujar curvas de Bézier en el mapa, utilizado para mostrar las rutas de avión con una apariencia más elegante y realista.
+
 **Estructura final de Leaflet completo:**
 ```
 assets/vendor/leaflet/
@@ -112,6 +130,7 @@ assets/vendor/leaflet/
 └── plugins/
     ├── leaflet.draw.css
     ├── leaflet.draw.js
+    ├── leaflet.curve.js
     ├── MarkerCluster.css
     ├── MarkerCluster.Default.css
     ├── leaflet.markercluster.js
@@ -148,6 +167,10 @@ assets/vendor/leaflet/
    - Extrae archivos de `dist/` → `assets/vendor/leaflet/plugins/`
    - Incluye: `MarkerCluster.css`, `MarkerCluster.Default.css`, `leaflet.markercluster.js`
 
+6. **Leaflet.curve Plugin:**
+   - Descarga desde: https://cdn.jsdelivr.net/npm/@elfalem/leaflet-curve@0.9.2/dist/leaflet.curve.js
+   - Guarda como: `assets/vendor/leaflet/plugins/leaflet.curve.js`
+
 ## ⚠️ Nota Importante
 
 Sin estas librerías, la aplicación no funcionará correctamente ya que:
@@ -174,5 +197,6 @@ Puedes verificar que los archivos estén correctamente instalados accediendo a:
 - `http://localhost/TravelMap/assets/vendor/leaflet/plugins/leaflet.draw.css`
 - `http://localhost/TravelMap/assets/vendor/leaflet/plugins/leaflet.draw.js`
 - `http://localhost/TravelMap/assets/vendor/leaflet/plugins/leaflet.markercluster.js`
+- `http://localhost/TravelMap/assets/vendor/leaflet/plugins/leaflet.curve.js`
 
 Si ves el código fuente de las librerías, ¡están instaladas correctamente!
