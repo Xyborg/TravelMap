@@ -1,6 +1,7 @@
 <?php
 // Cargar configuración para las constantes
 require_once __DIR__ . '/config/config.php';
+require_once __DIR__ . '/version.php';
 ?>
 <!DOCTYPE html>
 <html lang="<?= current_lang() ?>">
@@ -24,7 +25,7 @@ require_once __DIR__ . '/config/config.php';
     <link rel="stylesheet" href="<?= ASSETS_URL ?>/vendor/leaflet/plugins/MarkerCluster.Default.css">
     
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="<?= ASSETS_URL ?>/css/public_map.css?v=18">
+    <link rel="stylesheet" href="<?= ASSETS_URL ?>/css/public_map.css?v=<?php echo $version; ?>">
     
     <?php 
     // Insertar código de analytics u otros scripts personalizados
@@ -219,7 +220,7 @@ require_once __DIR__ . '/config/config.php';
     </script>
     
     <!-- i18n JS -->
-    <script src="<?= ASSETS_URL ?>/js/i18n.js"></script>
+    <script src="<?= ASSETS_URL ?>/js/i18n.js?v=<?php echo $version; ?>"></script>
     
     <!-- Inicializar i18n -->
     <script>
@@ -244,7 +245,7 @@ require_once __DIR__ . '/config/config.php';
     </script>
     
     <!-- Public Map JS -->
-    <script src="<?= ASSETS_URL ?>/js/public_map.js?v=14"></script>
+    <script src="<?= ASSETS_URL ?>/js/public_map.js?v=<?php echo $version; ?>"></script>
     
     <!-- Lightbox para imágenes -->
     <div id="imageLightbox" class="lightbox" style="display: none;">

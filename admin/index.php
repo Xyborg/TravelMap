@@ -7,6 +7,7 @@
 
 require_once __DIR__ . '/../includes/header.php';
 
+
 // Obtener estadísticas básicas
 try {
     $db = getDB();
