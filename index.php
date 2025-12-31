@@ -117,20 +117,20 @@ require_once __DIR__ . '/config/config.php';
             <!-- Lista de viajes -->
             <div>
                 <div class="trips-header">
-                    <h6 class="text-muted text-uppercase small mb-0">Viajes</h6>
+                    <h6 class="text-muted text-uppercase small mb-0"><?= __('map.trips_section') ?></h6>
                     <div class="trips-filters">
-                        <button type="button" class="filter-btn active" id="filterAll" title="Mostrar todos">Todos</button>
-                        <button type="button" class="filter-btn" id="filterPast" title="Solo viajes pasados">Pasados</button>
-                        <button type="button" class="filter-btn" id="filterNone" title="Ocultar todos">Ninguno</button>
+                        <button type="button" class="filter-btn active" id="filterAll" title="<?= __('map.show_all_trips') ?>"><?= __('map.filter_all') ?></button>
+                        <button type="button" class="filter-btn" id="filterPast" title="<?= __('map.show_past_trips') ?>"><?= __('map.filter_past') ?></button>
+                        <button type="button" class="filter-btn" id="filterNone" title="<?= __('map.hide_all_trips') ?>"><?= __('map.filter_none') ?></button>
                     </div>
                 </div>
                 <div id="tripsList">
                     <!-- Se llenará dinámicamente con JavaScript -->
                     <div class="text-center text-muted py-4">
                         <div class="spinner-border spinner-border-sm" role="status">
-                            <span class="visually-hidden">Cargando...</span>
+                            <span class="visually-hidden"><?= __('map.loading') ?></span>
                         </div>
-                        <p class="small mt-2">Cargando viajes...</p>
+                        <p class="small mt-2"><?= __('map.loading_trips') ?></p>
                     </div>
                 </div>
             </div>
@@ -164,7 +164,7 @@ require_once __DIR__ . '/config/config.php';
     <!-- Leyenda flotante -->
     <div class="legend-card card shadow-sm">
         <div class="card-body p-2">
-            <h6 class="small mb-2 fw-bold">Leyenda de Transporte</h6>
+            <h6 class="small mb-2 fw-bold"><?= __('map.transport_legend') ?></h6>
             <div id="legendItems">
                 <!-- Se llenará dinámicamente con JavaScript -->
             </div>
