@@ -3,7 +3,7 @@
     "name": "TravelMap",
     "title": "Travel Map - My Travels Around the World",
     "description": "Explore my travels around the world with interactive maps, routes and photographs",
-    "admin_panel": "Administration Panel",
+    "admin_panel": "Admin Panel",
     "view_public_site": "View public site",
     "footer_created_by": "Created by"
   },
@@ -19,7 +19,7 @@
     "import_airbnb": "Import Airbnb"
   },
   "admin": {
-    "title": "Administration Panel",
+    "title": "Admin Panel",
     "dashboard": "Dashboard",
     "welcome": "Welcome",
     "statistics": "Statistics",
