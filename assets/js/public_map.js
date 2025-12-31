@@ -18,6 +18,14 @@
     let pointMarkers = [];
     let popup = null;
     
+    // Map style URLs (all free, no API key needed)
+    const MAP_STYLES = {
+        'positron': 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
+        'voyager': 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
+        'dark-matter': 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
+        'osm-liberty': 'https://tiles.openfreemap.org/styles/liberty'
+    };
+    
     // Track visibility state
     let visibleTripIds = new Set();
     let showRoutes = true;
@@ -171,10 +179,14 @@
      * Initialize the MapLibre GL map
      */
     function initMap() {
+        // Get configured map style or default to voyager
+        const mapStyleKey = appConfig?.map?.style || 'voyager';
+        const mapStyleUrl = MAP_STYLES[mapStyleKey] || MAP_STYLES['voyager'];
+        
         // Create MapLibre GL map
         map = new maplibregl.Map({
             container: 'map',
-            style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
+            style: mapStyleUrl,
             center: [0, 20],
             zoom: 2,
             minZoom: 1,
