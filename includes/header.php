@@ -125,33 +125,11 @@ $user_id = get_current_user_id();
                             <span class="nav-item-label"><?= __('navigation.points') ?></span>
                         </a>
                     </div>
-                    
-                    <div class="nav-item">
-                        <a class="nav-link <?= ($current_page === 'users.php' || $current_page === 'user_form.php') ? 'active' : '' ?>" href="<?= BASE_URL ?>/admin/users.php" title="<?= __('navigation.users') ?>">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                                <circle cx="9" cy="7" r="4"></circle>
-                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                            </svg>
-                            <span class="nav-item-label"><?= __('navigation.users') ?></span>
-                        </a>
-                    </div>
                 </div>
                 
-                <!-- Settings Section -->
+                <!-- Import/Export Section -->
                 <div class="sidebar-section">
-                    <div class="sidebar-section-title"><?= __('navigation.settings') ?? 'Settings' ?></div>
-                    
-                    <div class="nav-item">
-                        <a class="nav-link <?= ($current_page === 'settings.php') ? 'active' : '' ?>" href="<?= BASE_URL ?>/admin/settings.php" title="<?= __('navigation.settings') ?>">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="12" cy="12" r="3"></circle>
-                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-                            </svg>
-                            <span class="nav-item-label"><?= __('navigation.settings') ?></span>
-                        </a>
-                    </div>
+                    <div class="sidebar-section-title"><?= __('navigation.import_export') ?? 'Import / Export' ?></div>
                     
                     <div class="nav-item">
                         <a class="nav-link <?= ($current_page === 'import_flights.php') ? 'active' : '' ?>" href="<?= BASE_URL ?>/admin/import_flights.php" title="<?= __('navigation.import_flights') ?>">
@@ -173,6 +151,33 @@ $user_id = get_current_user_id();
                                 <path d="M12 18.7753C10.3443 16.7754 9 15.5355 9 13.5C9 11.4645 10.5033 10 12.0033 10C13.5033 10 15 11.4645 15 13.5C15 15.5355 13.6557 16.7754 12 18.7753ZM12 18.7753C10 21.3198 6.02071 21.4621 4.34969 20.302C2.67867 19.1419 2.65485 16.7398 3.75428 14.1954C4.85371 11.651 6.31925 8.5977 9.25143 4.52665C10.2123 3.45799 10.8973 3 11.9967 3M12 18.7753C14 21.3198 17.9793 21.4621 19.6503 20.302C21.3213 19.1419 21.3451 16.7398 20.2457 14.1954C19.1463 11.651 17.6807 8.5977 14.7486 4.52665C13.7877 3.45799 13.1027 3 12.0033 3" />
                             </svg>
                             <span class="nav-item-label"><?= __('navigation.import_airbnb') ?></span>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Settings Section -->
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title"><?= __('navigation.settings') ?? 'Settings' ?></div>
+                    
+                    <div class="nav-item">
+                        <a class="nav-link <?= ($current_page === 'settings.php') ? 'active' : '' ?>" href="<?= BASE_URL ?>/admin/settings.php" title="<?= __('navigation.settings') ?>">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                            </svg>
+                            <span class="nav-item-label"><?= __('navigation.settings') ?></span>
+                        </a>
+                    </div>
+                    
+                    <div class="nav-item">
+                        <a class="nav-link <?= ($current_page === 'users.php' || $current_page === 'user_form.php') ? 'active' : '' ?>" href="<?= BASE_URL ?>/admin/users.php" title="<?= __('navigation.users') ?>">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                            <span class="nav-item-label"><?= __('navigation.users') ?></span>
                         </a>
                     </div>
                 </div>

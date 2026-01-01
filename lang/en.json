@@ -16,6 +16,7 @@
     "settings": "Settings",
     "logout": "Logout",
     "import": "Import",
+    "import_export": "Import / Export",
     "import_flights": "Import Flights",
     "import_airbnb": "Import Airbnb"
   },
