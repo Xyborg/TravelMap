@@ -172,8 +172,7 @@ require_once __DIR__ . '/version.php';
     <!-- MapLibre GL JS -->
     <script src="<?= ASSETS_URL ?>/vendor/maplibre/maplibre-gl.js"></script>
     
-    <!-- deck.gl for WebGL layers (flight arcs) -->
-    <script src="<?= ASSETS_URL ?>/vendor/deckgl/deck.gl.min.js"></script>
+    <!-- deck.gl is loaded on-demand when flight routes are enabled -->
     
     <!-- Supercluster for point clustering -->
     <script src="<?= ASSETS_URL ?>/vendor/supercluster/supercluster.min.js"></script>
@@ -264,5 +263,14 @@ require_once __DIR__ . '/version.php';
             </svg>
         </a>
     </footer>
+    
+    <!-- Service Worker for tile caching -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('<?= BASE_URL ?>/sw.js')
+                .then(() => console.log('Service Worker registered for tile caching'))
+                .catch(() => {});
+        }
+    </script>
 </body>
 </html>

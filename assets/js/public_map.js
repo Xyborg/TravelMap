@@ -13,6 +13,7 @@
     let tripsData = [];
     let appConfig = null;
     let deckOverlay = null;
+    let deckLoaded = false;
     let supercluster = null;
     let clusterMarkers = [];
     let pointMarkers = [];
@@ -409,7 +410,8 @@
         
         // Skip simple plane routes (A-to-B) - they're handled by deck.gl arcs
         // Complex aerial routes with 3+ waypoints are rendered as lines
-        if (transportType === 'plane') {
+        const isPlaneRoute = transportType === 'plane';
+        if (isPlaneRoute) {
             const coords = route.geojson.geometry?.coordinates || [];
             if (coords.length <= 2) {
                 return; // Simple flight - handled by deck.gl arcs
@@ -434,6 +436,9 @@
         
         // Add layer
         if (!map.getLayer(layerId)) {
+            // Plane routes are controlled by showFlightRoutes, others by showRoutes
+            const initialVisibility = isPlaneRoute ? showFlightRoutes : showRoutes;
+            
             const layerConfig = {
                 id: layerId,
                 type: 'line',
@@ -441,7 +446,7 @@
                 layout: {
                     'line-join': 'round',
                     'line-cap': 'round',
-                    'visibility': showRoutes ? 'visible' : 'none'
+                    'visibility': initialVisibility ? 'visible' : 'none'
                 },
                 paint: {
                     'line-color': color,
@@ -486,7 +491,7 @@
     }
 
     /**
-     * Update flight arcs using deck.gl
+     * Update flight arcs using deck.gl (lazy loaded for performance)
      */
     function updateFlightArcs() {
         if (!showFlightRoutes) {
@@ -496,6 +501,33 @@
             return;
         }
         
+        // Lazy load deck.gl if not already loaded
+        if (typeof deck === 'undefined') {
+            if (!deckLoaded) {
+                deckLoaded = true; // Prevent multiple loads
+                console.log('Loading deck.gl on demand...');
+                const script = document.createElement('script');
+                script.src = BASE_URL + '/assets/vendor/deckgl/deck.gl.min.js';
+                script.onload = function() {
+                    console.log('deck.gl loaded');
+                    renderFlightArcs();
+                };
+                script.onerror = function() {
+                    console.error('Failed to load deck.gl');
+                    deckLoaded = false;
+                };
+                document.head.appendChild(script);
+            }
+            return;
+        }
+        
+        renderFlightArcs();
+    }
+    
+    /**
+     * Actually render the flight arcs (called after deck.gl is loaded)
+     */
+    function renderFlightArcs() {
         const flightData = [];
         
         tripsData.forEach(function(trip) {
@@ -642,7 +674,7 @@
                 
                 clusterMarkers.push(marker);
             } else {
-                // Individual point marker
+                // Individual point marker with icon
                 const point = feature.properties;
                 const typeConfig = pointTypeConfig[point.type] || pointTypeConfig['visit'];
                 
@@ -779,7 +811,10 @@
         const layers = map.getStyle().layers || [];
         layers.forEach(function(layer) {
             if (layer.metadata && layer.metadata.tripId === tripId) {
-                map.setLayoutProperty(layer.id, 'visibility', visible && showRoutes ? 'visible' : 'none');
+                const transportType = layer.metadata?.transportType;
+                // Plane routes use showFlightRoutes, others use showRoutes
+                const toggleState = transportType === 'plane' ? showFlightRoutes : showRoutes;
+                map.setLayoutProperty(layer.id, 'visibility', visible && toggleState ? 'visible' : 'none');
             }
         });
         
@@ -789,7 +824,7 @@
     }
 
     /**
-     * Toggle all routes visibility
+     * Toggle all routes visibility (excludes plane routes - those use flights toggle)
      */
     function toggleRoutes(show) {
         showRoutes = show;
@@ -797,6 +832,9 @@
         layers.forEach(function(layer) {
             if (layer.id.startsWith('route-layer-')) {
                 const tripId = layer.metadata?.tripId;
+                const transportType = layer.metadata?.transportType;
+                // Skip plane routes - they're controlled by flights toggle
+                if (transportType === 'plane') return;
                 const visible = show && visibleTripIds.has(tripId);
                 map.setLayoutProperty(layer.id, 'visibility', visible ? 'visible' : 'none');
             }
@@ -816,11 +854,26 @@
     }
 
     /**
-     * Toggle flight routes visibility
+     * Toggle flight routes visibility (both deck.gl arcs and complex plane line layers)
      */
     function toggleFlightRoutes(show) {
         showFlightRoutes = show;
+        
+        // Toggle deck.gl arcs (simple A-to-B flights)
         updateFlightArcs();
+        
+        // Toggle complex plane line layers (3+ waypoints)
+        const layers = map.getStyle().layers || [];
+        layers.forEach(function(layer) {
+            if (layer.id.startsWith('route-layer-')) {
+                const tripId = layer.metadata?.tripId;
+                const transportType = layer.metadata?.transportType;
+                if (transportType === 'plane') {
+                    const visible = show && visibleTripIds.has(tripId);
+                    map.setLayoutProperty(layer.id, 'visibility', visible ? 'visible' : 'none');
+                }
+            }
+        });
     }
 
     /**
