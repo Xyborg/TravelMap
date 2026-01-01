@@ -4,6 +4,27 @@
  * Estilos personalizados para el mapa público interactivo
  */
 
+/* ========== Performance Mode ========== */
+/* Disables expensive CSS effects for low-end GPUs (AMD Windows) */
+body.performance-mode .floating-controls,
+body.performance-mode .legend-card,
+body.performance-mode .offcanvas,
+body.performance-mode .maplibregl-popup-content,
+body.performance-mode .lightbox,
+body.performance-mode .lightbox-hint {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+body.performance-mode .floating-controls,
+body.performance-mode .legend-card {
+    background: rgba(255, 255, 255, 1) !important;
+}
+
+body.performance-mode .offcanvas {
+    background: #ffffff !important;
+}
+
 /* ========== Layout General ========== */
 * {
     margin: 0;

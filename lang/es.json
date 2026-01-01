@@ -16,6 +16,7 @@
     "settings": "Configuración",
     "logout": "Cerrar Sesión",
     "import": "Importar",
+    "import_export": "Importar / Exportar",
     "import_flights": "Importar Vuelos",
     "import_airbnb": "Importar Airbnb"
   },

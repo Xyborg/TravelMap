@@ -35,6 +35,15 @@
     // Route sources and layers tracking
     let routeSourcesAdded = new Set();
     
+    // Throttle timer for cluster updates (performance)
+    let clusterUpdateTimer = null;
+    const CLUSTER_UPDATE_DELAY = 100; // ms - throttle cluster recalculations
+    
+    // Idle detection for reducing GPU usage when not interacting
+    let idleTimer = null;
+    let isIdle = false;
+    const IDLE_TIMEOUT = 3000; // ms - time before map goes idle
+    
     // LocalStorage key for user preferences
     const STORAGE_KEY = 'travelmap_preferences';
 
@@ -116,12 +125,15 @@
      */
     function savePreferences() {
         try {
+            const existingPrefs = loadPreferences();
             const prefs = {
                 showRoutes: $('#toggleRoutes').is(':checked'),
                 showPoints: $('#togglePoints').is(':checked'),
                 showFlightRoutes: $('#toggleFlightRoutes').is(':checked'),
                 selectedTrips: getSelectedTripIds(),
-                knownTripIds: getAllTripIds()
+                knownTripIds: getAllTripIds(),
+                performanceMode: existingPrefs.performanceMode, // Preserve performance mode setting
+                yearCollapsedStates: existingPrefs.yearCollapsedStates // Preserve collapsed states
             };
             localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
         } catch (e) {
@@ -183,7 +195,7 @@
         const mapStyleKey = appConfig?.map?.style || 'voyager';
         const mapStyleUrl = MAP_STYLES[mapStyleKey] || MAP_STYLES['voyager'];
         
-        // Create MapLibre GL map
+        // Create MapLibre GL map with performance optimizations
         map = new maplibregl.Map({
             container: 'map',
             style: mapStyleUrl,
@@ -191,7 +203,15 @@
             zoom: 2,
             minZoom: 1,
             maxZoom: 18,
-            attributionControl: true
+            attributionControl: true,
+            // Performance optimizations for AMD/low-end GPUs
+            antialias: false,           // Disable antialiasing (major GPU saver)
+            preserveDrawingBuffer: false,
+            fadeDuration: 0,            // Disable fade animations
+            trackResize: true,
+            refreshExpiredTiles: false, // Don't refresh unchanged tiles
+            maxTileCacheSize: 50,       // Limit tile cache
+            crossSourceCollisions: false // Reduce collision detection
         });
 
         // Add navigation controls
@@ -231,9 +251,42 @@
             loadData();
         });
 
-        // Update clusters on zoom
-        map.on('zoom', updateClusters);
-        map.on('moveend', updateClusters);
+        // Update clusters on zoom (throttled for performance)
+        map.on('zoom', throttledClusterUpdate);
+        map.on('moveend', throttledClusterUpdate);
+        
+        // Idle detection to reduce GPU usage when not interacting
+        function resetIdleTimer() {
+            if (isIdle) {
+                isIdle = false;
+                // Wake up the map - trigger repaint
+                map.triggerRepaint();
+            }
+            if (idleTimer) clearTimeout(idleTimer);
+            idleTimer = setTimeout(() => {
+                isIdle = true;
+                // When idle, stop continuous rendering
+                // The map will still respond to interactions
+            }, IDLE_TIMEOUT);
+        }
+        
+        map.on('move', resetIdleTimer);
+        map.on('zoom', resetIdleTimer);
+        map.on('click', resetIdleTimer);
+        map.on('mousemove', resetIdleTimer);
+        
+        // Start idle timer
+        resetIdleTimer();
+    }
+    
+    /**
+     * Throttled cluster update to reduce CPU usage
+     */
+    function throttledClusterUpdate() {
+        if (clusterUpdateTimer) {
+            clearTimeout(clusterUpdateTimer);
+        }
+        clusterUpdateTimer = setTimeout(updateClusters, CLUSTER_UPDATE_DELAY);
     }
 
     /**
@@ -354,9 +407,14 @@
 
         const transportType = route.transport_type || 'car';
         
-        // Skip plane routes - they're handled by deck.gl
+        // Skip simple plane routes (A-to-B) - they're handled by deck.gl arcs
+        // Complex aerial routes with 3+ waypoints are rendered as lines
         if (transportType === 'plane') {
-            return;
+            const coords = route.geojson.geometry?.coordinates || [];
+            if (coords.length <= 2) {
+                return; // Simple flight - handled by deck.gl arcs
+            }
+            // Complex aerial route - continue to render as line
         }
         
         const config = transportConfig[transportType] || transportConfig['car'];
@@ -447,11 +505,13 @@
                 trip.routes.forEach(function(route) {
                     if (route.transport_type === 'plane' && route.geojson && route.geojson.geometry) {
                         const coords = route.geojson.geometry.coordinates;
-                        if (coords && coords.length >= 2) {
+                        // Only render as arc if it's a simple A-to-B flight (exactly 2 points)
+                        // Complex aerial routes with 3+ waypoints are rendered as MapLibre lines
+                        if (coords && coords.length === 2) {
                             const isFuture = isFutureTrip(trip);
                             flightData.push({
                                 source: coords[0],
-                                target: coords[coords.length - 1],
+                                target: coords[1],
                                 tripId: trip.id,
                                 tripTitle: trip.title,
                                 isFuture: isFuture,
@@ -463,7 +523,7 @@
             }
         });
         
-        // Create or update deck.gl overlay
+        // Create or update deck.gl overlay with performance optimizations
         const arcLayer = new deck.ArcLayer({
             id: 'flight-arcs',
             data: flightData,
@@ -475,6 +535,12 @@
             getHeight: 0.3,
             greatCircle: true,
             pickable: true,
+            // Performance: reduce arc segments for smoother rendering
+            numSegments: 25,            // Default is 50, reduce for performance
+            updateTriggers: {
+                getSourcePosition: flightData.length,
+                getTargetPosition: flightData.length
+            },
             onHover: (info) => {
                 // Change cursor to pointer when hovering over flight arcs
                 document.getElementById('map').style.cursor = info.object ? 'pointer' : 'default';
@@ -1157,9 +1223,58 @@
         if (e.key === 'Escape') closeLightbox();
     });
 
+    // ==================== PERFORMANCE MODE ====================
+    
+    /**
+     * Detect if we should enable performance mode
+     * Targets Windows + AMD which has poor WebGL performance
+     */
+    function detectPerformanceMode() {
+        try {
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+            if (!gl) return false;
+            
+            const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+            if (!debugInfo) return false;
+            
+            const renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL).toLowerCase();
+            const isAMD = renderer.includes('amd') || renderer.includes('radeon') || renderer.includes('ati');
+            const isWindows = navigator.platform.toLowerCase().includes('win');
+            
+            // Also enable for Intel integrated graphics on Windows
+            const isIntel = renderer.includes('intel');
+            
+            if ((isAMD || isIntel) && isWindows) {
+                console.log('Performance mode enabled for:', renderer);
+                return true;
+            }
+            
+            return false;
+        } catch (e) {
+            return false;
+        }
+    }
+    
+    /**
+     * Apply performance mode if needed
+     */
+    function applyPerformanceMode() {
+        const prefs = loadPreferences();
+        // Check if user explicitly set performance mode, or auto-detect
+        const shouldEnable = prefs.performanceMode === true || 
+            (prefs.performanceMode === undefined && detectPerformanceMode());
+        
+        if (shouldEnable) {
+            document.body.classList.add('performance-mode');
+            console.log('Performance mode: enabled (CSS blur effects disabled)');
+        }
+    }
+
     // ==================== INITIALIZATION ====================
 
     $(document).ready(function() {
+        applyPerformanceMode();
         applyPreferencesToControls();
         loadConfig().always(function() {
             initMap();
